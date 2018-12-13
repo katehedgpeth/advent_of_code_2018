@@ -6,33 +6,34 @@ defmodule AdventOfCode.Day4Test do
                |> Application.app_dir("priv/day_4.txt")
                |> File.stream!()
 
+  @test_data """
+  [1518-11-01 00:05] falls asleep
+  [1518-11-01 00:25] wakes up
+  [1518-11-01 00:55] wakes up
+  [1518-11-01 23:58] Guard #99 begins shift
+  [1518-11-01 00:00] Guard #10 begins shift
+  [1518-11-03 00:29] wakes up
+  [1518-11-02 00:40] falls asleep
+  [1518-11-02 00:50] wakes up
+  [1518-11-03 00:24] falls asleep
+  [1518-11-01 00:30] falls asleep
+  [1518-11-04 00:02] Guard #99 begins shift
+  [1518-11-04 00:36] falls asleep
+  [1518-11-04 00:46] wakes up
+  [1518-11-03 00:05] Guard #10 begins shift
+  [1518-11-05 00:03] Guard #99 begins shift
+  [1518-11-05 00:45] falls asleep
+  [1518-11-05 00:55] wakes up
+  """
+
   test "question_1/1" do
-    {:ok, io} =
-      StringIO.open("""
-      [1518-11-01 00:05] falls asleep
-      [1518-11-01 00:25] wakes up
-      [1518-11-01 00:55] wakes up
-      [1518-11-01 23:58] Guard #99 begins shift
-      [1518-11-01 00:00] Guard #10 begins shift
-      [1518-11-03 00:29] wakes up
-      [1518-11-02 00:40] falls asleep
-      [1518-11-02 00:50] wakes up
-      [1518-11-03 00:24] falls asleep
-      [1518-11-01 00:30] falls asleep
-      [1518-11-04 00:02] Guard #99 begins shift
-      [1518-11-04 00:36] falls asleep
-      [1518-11-04 00:46] wakes up
-      [1518-11-03 00:05] Guard #10 begins shift
-      [1518-11-05 00:03] Guard #99 begins shift
-      [1518-11-05 00:45] falls asleep
-      [1518-11-05 00:55] wakes up
-      """)
+    {:ok, io} = StringIO.open(@test_data)
 
     assert io
            |> IO.stream(:line)
            |> Day4.question_1() == 240
 
-    assert Day4.question_1(@file_stream) == 0
+    assert Day4.question_1(@file_stream) == 50558
   end
 
   describe "build_times/2" do
@@ -57,5 +58,15 @@ defmodule AdventOfCode.Day4Test do
                  }
                ]
     end
+  end
+
+  test "question_2" do
+    {:ok, io} = StringIO.open(@test_data)
+
+    assert io
+           |> IO.stream(:line)
+           |> Day4.question_2() == 4455
+
+    assert Day4.question_2(@file_stream) == 28198
   end
 end

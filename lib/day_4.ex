@@ -3,25 +3,44 @@ defmodule AdventOfCode.Day4 do
 
   def question_1(input) do
     input
-    |> Enum.into([])
-    |> Enum.sort()
-    |> Enum.map(&parse_line/1)
-    |> Enum.reduce([], &build_times/2)
-    |> Enum.reduce(%{}, &build_guard_hour/2)
+    |> build_data_store()
     |> Enum.map(&sum_minutes/1)
     |> Enum.sort_by(fn {_id, {sum, _minutes}} -> -sum end)
     |> calculate_question_1()
   end
 
-  defp calculate_question_1([{"#" <> id, {_sum, minutes}} | _]) do
+  def question_2(input) do
+    data = build_data_store(input)
+
+    data
+    |> Enum.reduce(@guard_hour, &calculate_common_minute/2)
+    |> Enum.sort_by(fn {_min, {_id, count}} -> -count end)
+    |> calculate_question_2()
+  end
+
+  defp calculate_question_2([{minute, {id, _count}} | _]) do
+    minute * id_to_int(id)
+  end
+
+  defp build_data_store(input) do
+    input
+    |> Enum.into([])
+    |> Enum.sort()
+    |> Enum.map(&parse_line/1)
+    |> Enum.reduce([], &build_times/2)
+    |> Enum.reduce(%{}, &build_guard_hour/2)
+  end
+
+  defp calculate_question_1([{id, {_sum, minutes}} | _]) do
     [{highest_minute, _} | _] = Enum.sort_by(minutes, fn {_, count} -> -count end)
 
-    id_int =
-      id
-      |> String.trim()
-      |> String.to_integer()
+    highest_minute * id_to_int(id)
+  end
 
-    highest_minute * id_int
+  defp id_to_int("#" <> id) do
+    id
+    |> String.trim()
+    |> String.to_integer()
   end
 
   defp parse_line("[" <> line) do
@@ -82,5 +101,19 @@ defmodule AdventOfCode.Day4 do
   defp sum_minutes({id, minutes}) do
     sum = Enum.reduce(minutes, 0, fn {_, count}, acc -> acc + count end)
     {id, {sum, minutes}}
+  end
+
+  defp calculate_common_minute({id, minutes}, acc) do
+    Enum.reduce(minutes, acc, &do_calculate_common_minute(id, &1, &2))
+  end
+
+  defp do_calculate_common_minute(id, {minute, count}, acc) do
+    case Map.get(acc, minute) do
+      {_id, prev_count} when prev_count > count ->
+        acc
+
+      _ ->
+        Map.put(acc, minute, {id, count})
+    end
   end
 end
